@@ -1,6 +1,7 @@
 name: Build
 
-on: [push]
+on:
+  workflow_dispatch:
 
 env:
   TOOLCHAIN: cruel
@@ -13,11 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        model: [ "G970F,G973F,G975F", "N975F" ]
+        model: [ "N975F" ]
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.7'
 
@@ -55,9 +56,9 @@ jobs:
           set -e -o pipefail
           ./cruelbuild config                    \
                        model=${{ matrix.model }} \
-                       name="Cruel-v4.6"         \
+                       name="CruelKernel-Ramdisk-v1-OneUI3-Note10"         \
                        toolchain=$TOOLCHAIN      \
-                       +magisk                   \
+                       -magisk                   \
                        +nohardening              \
                        +ttl                      \
                        +wireguard                \
@@ -67,6 +68,11 @@ jobs:
                        +force_dex_wqhd           \
                        +morosound                \
                        +boeffla_wl_blocker       \
+                       +fp_boost                 \
+                       +tcp_cubic                \
+                       +tcp_westwood             \
+                       +tcp_htcp                 \
+                       +ntfs                     \
           2>&1 | tee config.info
 
       - name: Install gcc-aarch64-linux-gnu
@@ -116,21 +122,21 @@ jobs:
           unzip ../CruelKernel.zip
       - name: Upload Kernel Zip
         if: env.INSTALLER == 'yes'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: CruelKernel-${{ matrix.model }}
           path: installer/*
           if-no-files-found: error
       - name: Upload Kernel Images
         if: env.INSTALLER != 'yes'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: CruelKernel-${{ matrix.model }}
           path: '*.img'
           if-no-files-found: error
 
       - name: Upload Kernel Info
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ConfigurationInfo-${{ matrix.model }}
           path: config.*
