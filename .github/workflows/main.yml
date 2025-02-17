@@ -73,6 +73,7 @@ jobs:
                        +tcp_westwood             \
                        +tcp_htcp                 \
                        +ntfs                     \
+                       +dtb                      \
           2>&1 | tee config.info
 
       - name: Install gcc-aarch64-linux-gnu
